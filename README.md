@@ -1,0 +1,1 @@
+A pre-configured template for react with typescript and webpack to be used for teleport-code-generators
