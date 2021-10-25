@@ -1,0 +1,4 @@
+import "/npm:subjecto@0.0.36/subject";
+import "/npm:subjecto@0.0.36/inspect";
+export * from "/npm:subjecto@0.0.36";
+export { default } from "/npm:subjecto@0.0.36";

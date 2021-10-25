@@ -1,0 +1,219 @@
+var exports$1 = {};
+Object.defineProperty(exports$1, "__esModule", {
+  value: true
+});
+var styles = {
+  info: "color: #aaa",
+  debug: "color: blue",
+  error: "color: red"
+};
+
+var log = function (value, level) {
+  console.log("%c SUBJECTO %c " + value, "background-color: #000; padding: 2px 0; border-radius: 3px; font-size: 9px; color: #fff", "color: " + styles[level]);
+};
+
+exports$1.default = log;
+
+var exports = {};
+
+var __spreadArrays = exports && exports.__spreadArrays || function () {
+  for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+
+  for (var r = Array(s), k = 0, i = 0; i < il; i++) for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++) r[k] = a[j];
+
+  return r;
+};
+
+var __importDefault = exports && exports.__importDefault || function (mod) {
+  return mod && mod.__esModule ? mod : {
+    "default": mod
+  };
+};
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var log_1 = __importDefault(exports$1);
+
+var defaultName = "noName";
+var defaultLocalStoragePrefix = "subjectoValue";
+
+var Subject = function () {
+  function Subject(initialValue, name, useLocalStorage) {
+    if (name === void 0) {
+      name = defaultName;
+    }
+
+    this.value = (useLocalStorage === null || useLocalStorage === void 0 ? void 0 : useLocalStorage.length) === 2 && typeof localStorage !== "undefined" && localStorage.getItem(defaultLocalStoragePrefix + name) ? // @ts-ignore
+    useLocalStorage[0]( // @ts-ignore
+    localStorage.getItem(defaultLocalStoragePrefix + name)) : initialValue;
+    this.subscribers = {};
+    this.name = name;
+    this.debug = false;
+    this.useLocalStorage = useLocalStorage;
+
+    this.before = function (nextValue) {
+      return nextValue;
+    };
+
+    this.count = 1;
+  }
+
+  return Subject;
+}();
+
+Subject.prototype.next = function (nextValue) {
+  var _this = this;
+
+  var _a;
+
+  this.value = this.before(typeof nextValue === "function" ? nextValue(this.value) : nextValue);
+
+  if (((_a = this.useLocalStorage) === null || _a === void 0 ? void 0 : _a.length) === 2) {
+    this.saveToLocalStorage();
+  }
+
+  this.count++;
+  Object.keys(this.subscribers).forEach(function (key) {
+    if (_this.subscribers[key]) {
+      _this.subscribers[key](_this.value);
+    }
+  });
+
+  if (this.debug) {
+    if (typeof this.debug === "function") {
+      this.debug(nextValue);
+    } else {
+      console.log("\n--- SUBJECTO DEBUG: `" + this.name + "` ---");
+      console.log(" \u251C nextValue:", nextValue);
+      console.log(" \u2514 subscribers(" + Object.keys(this.subscribers).length + "): ", this, "\n");
+    }
+  }
+};
+
+Subject.prototype.nextAssign = function (newValue) {
+  try {
+    this.next(Object.assign({}, this.value, newValue));
+  } catch (error) {
+    this.next(newValue);
+  }
+
+  this.count++;
+};
+
+Subject.prototype.saveToLocalStorage = function () {
+  var _a;
+
+  if (this.name === defaultName) {
+    console.log("Subjecto will not save values that do not have a custom name");
+    return false;
+  }
+
+  if (typeof localStorage !== "undefined" && ((_a = this.useLocalStorage) === null || _a === void 0 ? void 0 : _a.length) === 2) {
+    try {
+      localStorage.setItem(defaultLocalStoragePrefix + this.name, this.useLocalStorage[1](this.value));
+      return true;
+    } catch (error) {
+      console.log(error);
+      return false;
+    }
+  }
+
+  return false;
+};
+
+Subject.prototype.nextPush = function (value) {
+  if (Array.isArray(this.value)) {
+    this.next(__spreadArrays(this.value, [value]));
+    this.count++;
+  }
+};
+
+Subject.prototype.subscribe = function (subscription) {
+  var _this = this;
+
+  var subscriptionExistsAtIndex = Object.values(this.subscribers).indexOf(subscription);
+  var id = "";
+
+  if (subscriptionExistsAtIndex === -1) {
+    id = new Date().getTime() + "." + Object.keys(this.subscribers).length;
+    this.subscribers[id] = subscription;
+
+    if (this.debug) {
+      log_1.default(this.name + " / new subscription - (" + Object.keys(this.subscribers).length + ")", "debug");
+      console.log(" \u2514", this.subscribers);
+    }
+  } else {
+    id = Object.values(Object.keys(this.subscribers))[subscriptionExistsAtIndex];
+  }
+
+  return {
+    unsubscribe: function () {
+      _this.unsubscribe(id);
+
+      if (_this.debug) {
+        log_1.default("Subject `" + _this.name + "` has `" + Object.keys(_this.subscribers).length + "` subscribers left.", "debug");
+      }
+    },
+    id: id
+  };
+};
+
+Subject.prototype.toggle = function () {
+  if (typeof this.value === "boolean") {
+    this.next(!this.value);
+  }
+};
+/**
+ * Unsubscribes the listener from the subject
+ * @param id
+ */
+
+
+Subject.prototype.unsubscribe = function (id) {
+  delete this.subscribers[id];
+};
+/**
+ * Unsubscribes all current listeners
+ */
+
+
+Subject.prototype.complete = function () {
+  var _this = this;
+
+  Object.keys(this.subscribers).forEach(function (key) {
+    return _this.unsubscribe(key);
+  });
+};
+/**
+ * Execute once and then unsubscribe
+ */
+
+
+Subject.prototype.once = function (subscription) {
+  var handler = this.subscribe(function (value) {
+    subscription(value);
+    handler.unsubscribe();
+  });
+};
+/**
+ * The hook function is a placeholder/template function "slot" meant to be overriden.
+ * For example, it could be used to attach a React hook to this subject.
+ */
+
+
+Subject.prototype.hook = function (defaultValue) {
+  if (defaultValue) {
+    this.next(defaultValue);
+  }
+
+  return this.value;
+};
+
+exports.default = Subject;
+const __esModule = exports.__esModule;
+
+export { __esModule, exports as default };
+
+//# sourceMappingURL=subject.map

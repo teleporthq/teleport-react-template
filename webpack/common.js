@@ -1,37 +1,81 @@
-const { resolve } = require("path");
+const { resolve, join } = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
+const postcssNormalize = require('postcss-normalize');
 
-module.exports = {
-  resolve: {
-    extensions: [".js", ".jsx", ".ts", ".tsx"],
-  },
-  context: resolve(__dirname, "../src"),
-  module: {
-    rules: [
-      {
-        test: [/\.jsx?$/, /\.tsx?$/],
-        use: ["babel-loader"],
-        exclude: /node_modules/,
+module.exports = () => {
+  return {
+    resolve: {
+      modules: ['node_modules', 'app'],
+      mainFields: ['browser', 'jsnext:main', 'main'],
+      extensions: [".js", ".jsx", ".ts", ".tsx"],
+    },
+    target: 'web',
+    context: resolve(__dirname, "../src"),
+    experiments: {
+      buildHttp: {
+        upgrade: true,
+        cacheLocation: join(__dirname, '../webpack/webpack.lock'),
+        allowedUris: ["https://jspm.dev", "https://ga.jspm.io", "https://cdn.skypack.dev", "https://esm.sh/"]
+      }
+    },
+    module: {
+      rules: [
+        {
+          test: [/\.jsx?$/, /\.tsx?$/],
+          use: ["babel-loader"],
+          exclude: /node_modules/,
+        },
+        {
+          test: /\.module\.css$/,
+          use: ["style-loader", "css-loader", {
+            loader: require.resolve('postcss-loader'),
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('postcss-flexbugs-fixes'),
+                  require('postcss-preset-env')({
+                    autoprefixer: {
+                      flexbox: 'no-2009',
+                    },
+                    stage: 3,
+                  }),
+                  postcssNormalize(),
+                ],
+              },
+              sourceMap: false,
+            },
+          },
+         ],
+          sideEffects: true
+        },
+        {
+          test: /\.(png|svg|jpg|jpeg|gif)$/i,
+          type: 'asset/resource',
+        },
+        {
+          test: /\.svg$/i,
+          type: 'asset/inline'
+        },
+      ],
+    },
+    plugins: [new HtmlWebpackPlugin({
+      template: '../public/index.html',
+      minify: {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeRedundantAttributes: true,
+        useShortDoctype: true,
+        removeEmptyAttributes: true,
+        removeStyleLinkTypeAttributes: true,
+        keepClosingSlash: true,
+        minifyJS: true,
+        minifyCSS: true,
+        minifyURLs: true,
       },
-      {
-        test: /\.css$/,
-        use: ["style-loader", "css-loader"],
-      },
-      {
-        test: /\.(scss|sass)$/,
-        use: ["style-loader", "css-loader", "sass-loader"],
-      },
-      {
-        test: /\.(jpe?g|png|gif|svg)$/i,
-        use: [
-          "file-loader?hash=sha512&digest=hex&name=img/[contenthash].[ext]",
-          "image-webpack-loader?bypassOnDebug&optipng.optimizationLevel=7&gifsicle.interlaced=false",
-        ],
-      },
-    ],
-  },
-  plugins: [new HtmlWebpackPlugin({ template: "index.html" })],
-  performance: {
-    hints: false,
-  },
+      inject: true,
+    })],
+    performance: {
+      hints: false,
+    },
+  }
 };

@@ -1,8 +1,8 @@
-// development config
+const { join } = require('path')
 const { merge } = require("webpack-merge");
 const commonConfig = require("./common");
 
-module.exports = merge(commonConfig, {
+module.exports = (env) => merge(commonConfig(env), {
   mode: "development",
   entry: [
     "webpack-dev-server/client?http://localhost:8080",
@@ -11,6 +11,7 @@ module.exports = merge(commonConfig, {
   devServer: {
     hot: "only",
     historyApiFallback: true,
+    static: join(__dirname, '../public')
   },
   devtool: "cheap-module-source-map",
   plugins: [],
