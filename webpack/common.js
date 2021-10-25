@@ -5,7 +5,7 @@ module.exports = {
   resolve: {
     extensions: [".js", ".jsx", ".ts", ".tsx"],
   },
-  context: resolve(__dirname, "../../src"),
+  context: resolve(__dirname, "../src"),
   module: {
     rules: [
       {
