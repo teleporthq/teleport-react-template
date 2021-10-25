@@ -1,7 +1,0 @@
-{
-  "https://jspm.dev/npm:subjecto@0.0.36": { "integrity": "sha512-FSYg0gF1l4peDSmKDyCuYcJbmV92hSdsWHqfZnTjRRGDcYeYzL1SC4gvUbrqz6d5C5DYl/xhuANoJ2gp7p2/iw==", "contentType": "application/javascript; charset=utf-8" },
-  "https://jspm.dev/npm:subjecto@0.0.36/inspect": { "integrity": "sha512-IRrNeVbLWRUu1U27PC5XqGl9PqqDWaaK//UpNJw5SFVnwWHVTBqWwGbH+ybowd1WpukkZFWgmDzCS7CMG1qo7A==", "contentType": "application/javascript; charset=utf-8" },
-  "https://jspm.dev/npm:subjecto@0.0.36/subject": { "integrity": "sha512-a8m72ZTkaf9gQh0/3xcFSmat4t9Srua5y6O9d6D9hxpw6256sInYzyhB54iTExbPgXcugyMHTOLy8CVuOBINTw==", "contentType": "application/javascript; charset=utf-8" },
-  "https://jspm.dev/subjecto": { "integrity": "sha512-u9Zr8mbJ6YdNokYsgYg0V/D44bFnp+ol9aXOsCSZmH2WBb5ZBRB2NctCBhA/Z9mL08mEAQQyUqdIko1U/QO+9Q==", "contentType": "application/javascript; charset=utf-8" },
-  "version": 1
-}

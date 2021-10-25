@@ -21,7 +21,6 @@ module.exports = env => merge(commonConfig(env), {
         {
           from: '../public/playground_assets',
           to() {
-            console.log(join(__dirname, '../build', 'playground_assets'))
             return join(__dirname, '../build', 'playground_assets');
           },
         },

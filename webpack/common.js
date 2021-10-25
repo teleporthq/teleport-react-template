@@ -13,6 +13,7 @@ module.exports = () => {
     context: resolve(__dirname, "../src"),
     experiments: {
       buildHttp: {
+        frozen: false,
         upgrade: true,
         cacheLocation: join(__dirname, '../webpack/webpack.lock'),
         allowedUris: ["https://jspm.dev", "https://ga.jspm.io", "https://cdn.skypack.dev", "https://esm.sh/"]
