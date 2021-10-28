@@ -3,3 +3,7 @@
     height: 300px;
     background-image: url('../../public/playground_assets/testing.png');
 }
+
+.unsplash {
+    background-image: url('https://images.unsplash.com/photo-1514525253161-7a46d19cd819?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=Mnw5MTMyMXwwfDF8c2VhcmNofDE2fHxwYXJ0eXxlbnwwfHx8fDE2MzI5MTg0NTI&ixlib=rb-1.2.1&q=80&w=1080')
+}
